@@ -1,0 +1,22 @@
+digraph ListaUsuarios {
+rankdir=LR;
+U1[label="Luis Garcia\nlgarcia@edd.com"];
+U1 -> U2;
+U2[label="Marcos Itzep\nmitzep@edd.com"];
+U2 -> U3;
+U3[label="Greg Kroah-Hartman\ngkroah-hartman@edd.com"];
+U3 -> U4;
+U4[label="Mark Shuttleworth\nmshuttleworth@edd.com"];
+U4 -> U5;
+U5[label="Steven Mejia\nsmejia@edd.com"];
+U5 -> U6;
+U6[label="Brian Fox\nbfox@edd.com"];
+U6 -> U7;
+U7[label="Jon Corbet\njcorbet@edd.com"];
+U7 -> U8;
+U8[label="Karen Sandler\nksandler@edd.com"];
+U8 -> U9;
+U9[label="Mitchell Baker\nmbaker@edd.com"];
+U9 -> U10;
+U10[label="Ian Murdock\nimurdock@edd.com"];
+}
