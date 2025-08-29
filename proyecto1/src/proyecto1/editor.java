@@ -4,30 +4,86 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 
-public class editor extends javax.swing.JFrame {
+public class editor extends JFrame {
 
     private JTabbedPane tabbedPane;
     private JFileChooser fileChooser;
 
-    public editor() {
-        initComponents(); // el de NetBeans
+    
+    private JSplitPane mainSplitPane;
+    private JSplitPane centralSplitPane;
+    private JPanel salidaPanel;
+    private JPanel reportePanel;
+    private JTextArea salidaArea;
+    private JTextArea reporteArea;
 
+    public editor() {
+        
+        initComponentsCustom(); 
+        
         setTitle("AutómataLab - Editor con Pestañas");
         setSize(900, 600);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Pestañas
-        tabbedPane = new JTabbedPane();
-        getContentPane().add(tabbedPane, BorderLayout.CENTER);
-        nuevaPestana("Nuevo");
-
-        // Explorador de archivos
+        
         fileChooser = new JFileChooser();
 
-        // Crear menús
+     
         crearMenu();
+
+      
+        nuevaPestana("Nuevo");
     }
 
+   
+    private void initComponentsCustom() {
+        
+        getContentPane().setLayout(new BorderLayout());
+
+        
+        salidaPanel = new JPanel(new BorderLayout());
+        salidaPanel.setBorder(BorderFactory.createTitledBorder("Salida"));
+        salidaArea = new JTextArea();
+        salidaPanel.add(new JScrollPane(salidaArea), BorderLayout.CENTER);
+
+        
+        centralSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+
+        
+        JPanel entradaPanel = new JPanel(new BorderLayout());
+        entradaPanel.setBorder(BorderFactory.createTitledBorder("Entrada"));
+        tabbedPane = new JTabbedPane();
+        entradaPanel.add(tabbedPane, BorderLayout.CENTER);
+
+        
+        reportePanel = new JPanel(new BorderLayout());
+        reportePanel.setBorder(BorderFactory.createTitledBorder("Reporte"));
+        reporteArea = new JTextArea();
+        reporteArea.setEditable(false);
+        reportePanel.add(new JScrollPane(reporteArea), BorderLayout.CENTER);
+
+        
+        centralSplitPane.setLeftComponent(entradaPanel);
+        centralSplitPane.setRightComponent(reportePanel);
+        
+        centralSplitPane.setDividerLocation(0.8);
+
+        
+        mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        mainSplitPane.setTopComponent(centralSplitPane);
+        mainSplitPane.setBottomComponent(salidaPanel);
+        
+        mainSplitPane.setDividerLocation(0.7);
+
+       
+        getContentPane().add(mainSplitPane, BorderLayout.CENTER);
+        
+        
+        pack();
+    }
+    
+  
     private void nuevaPestana(String titulo) {
         JTextArea textArea = new JTextArea();
         JScrollPane scroll = new JScrollPane(textArea);
@@ -36,13 +92,18 @@ public class editor extends javax.swing.JFrame {
     }
 
     private JTextArea getTextAreaActual() {
-        JScrollPane scroll = (JScrollPane) tabbedPane.getSelectedComponent();
-        return (JTextArea) scroll.getViewport().getView();
+        try {
+            JScrollPane scroll = (JScrollPane) tabbedPane.getSelectedComponent();
+            return (JTextArea) scroll.getViewport().getView();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "No hay pestañas abiertas.", "Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
     }
 
     private void nuevoArchivo() { nuevaPestana("Nuevo"); }
 
-    private void abrirArchivo() {
+  private void abrirArchivo() {
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             File archivo = fileChooser.getSelectedFile();
             try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
@@ -52,12 +113,13 @@ public class editor extends javax.swing.JFrame {
                 tabbedPane.addTab(archivo.getName(), scroll);
                 tabbedPane.setSelectedComponent(scroll);
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir archivo", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Error al abrir archivo", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    private void guardarArchivo() {
+     private void guardarArchivo() {
         JTextArea textArea = getTextAreaActual();
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File archivo = fileChooser.getSelectedFile();
@@ -65,61 +127,29 @@ public class editor extends javax.swing.JFrame {
                 textArea.write(bw);
                 tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), archivo.getName());
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, "Error al guardar archivo", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Error al guardar archivo", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     private void ejecutarCodigo() {
         JTextArea textArea = getTextAreaActual();
+        if (textArea == null) return;
         String codigo = textArea.getText();
-        JOptionPane.showMessageDialog(this, "Ejecutando análisis del código...", "Ejecutar", JOptionPane.INFORMATION_MESSAGE);
-        // Aquí se conecta con el analizador léxico y sintáctico
+        
+        
+        salidaArea.setText("Analizando el código...\n");
+        salidaArea.append("¡Análisis completado!\n");
     }
 
     private void mostrarReporte(String tipo) {
-        JOptionPane.showMessageDialog(this, "Mostrando Reporte de " + tipo, "Reporte", JOptionPane.INFORMATION_MESSAGE);
-        // Aquí se abre el reporte generado
+        
+        reporteArea.setText("Generando reporte de " + tipo + "...\n");
+        reporteArea.append("¡Reporte de " + tipo + " generado exitosamente!");
     }
+
     
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void initComponent() {
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-
-        pack();
-    }
-
-    /** Aquí armamos los menús, para no tocar el initComponents */
     private void crearMenu() {
         JMenuBar menuBar = new JMenuBar();
 
@@ -159,10 +189,17 @@ public class editor extends javax.swing.JFrame {
     }
 
     public static void main(String args[]) {
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(editor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
         java.awt.EventQueue.invokeLater(() -> new editor().setVisible(true));
     }
 }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
-

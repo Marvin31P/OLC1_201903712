@@ -1,1 +1,55 @@
 
+// Declaraciones de terminales (los tokens de JFlex)
+terminal PUNTO_COMA, NUMERAL, COMA, LLAVE_A, LLAVE_C, PARENTESIS_A, PARENTESIS_C, DOLAR, GUION, DOS_PUNTOS, MENOR_QUE, MAYOR_QUE, IGUAL, DIAGONAL, ASTERISCO, PIPE, FLECHA;
+terminal String ID, CADENA;
+terminal String AP, AFD, NOMBRE, A, T, I, P, TRANSICIONES, VER_AUTOMATAS, DESC;
+
+// Declaraciones de no terminales (reglas de la gramática)
+non terminal inicio, lista_automata, automata, afd, ap, lista_parametros, parametro, lista_transiciones, transicion_afd, transicion_ap, lista_elementos;
+non terminal lista_funciones, funcion;
+
+// Gramática
+start with inicio;
+
+// Regla de inicio
+inicio ::= lista_automata | lista_funciones;
+
+// --- ESTRUCTURA PRINCIPAL DEL AUTÓMATA ---
+lista_automata ::= automata:a lista_automata | automata:a;
+automata ::= afd | ap;
+
+// Reglas para el AFD
+afd ::= MENOR_QUE AFD:a NOMBRE:n IGUAL:i CADENA:c MAYOR_QUE:my lista_parametros:p MENOR_QUE:me DIAGONAL:d AFD:a2 MAYOR_QUE:my2;
+
+// Reglas para el AP
+ap ::= MENOR_QUE AP:a NOMBRE:n IGUAL:i CADENA:c MAYOR_QUE:my lista_parametros:p MENOR_QUE:me DIAGONAL:d AP:a2 MAYOR_QUE:my2;
+
+// Reglas de los parámetros
+lista_parametros ::= parametro:p lista_parametros | parametro:p;
+parametro ::= T:t IGUAL:i lista_elementos:e PUNTO_COMA:pc
+            | I:i IGUAL:i2 lista_elementos:e PUNTO_COMA:pc
+            | A:a IGUAL:i lista_elementos:e PUNTO_COMA:pc
+            | P:p IGUAL:i lista_elementos:e PUNTO_COMA:pc
+            | TRANSICIONES:t DOS_PUNTOS:dp lista_transiciones:lt;
+            
+lista_elementos ::= LLAVE_A:la ID:i lista_elementos
+                  | LLAVE_A:la ID:i LLAVE_C:lc PUNTO_COMA:pc
+                  | ID:i COMA:c lista_elementos
+                  | LLAVE_C:lc;
+
+lista_transiciones ::= transicion_afd:t lista_transiciones | transicion_afd:t;
+transicion_afd ::= ID:id FLECHA:f ID:id2 COMA:c ID:id3 PIPE:p lista_transiciones;
+
+// --- TRANSICIONES PARA AFD Y AP ---
+// Transición para AFD
+transicion_afd ::= ID:origen FLECHA:f ID:simbolo_entrada COMA:c ID:destino PUNTO_COMA:pc;
+
+// Transición para AP (ejemplo simplificado)
+transicion_ap ::= ID:origen PARENTESIS_A:pa ID:simbolo_entrada PARENTESIS_C:pc FLECHA:f PARENTESIS_A:pa2 ID:simbolo_extrae PARENTESIS_C:pc2 COMA:c ID:destino DOS_PUNTOS:dp PARENTESIS_A:pa3 ID:simbolo_inserta PARENTESIS_C:pc3;
+
+
+// --- FUNCIONES DEL LENGUAJE ---
+lista_funciones ::= funcion:f lista_funciones | funcion:f;
+funcion ::= VER_AUTOMATAS:va PARENTESIS_A:pa PARENTESIS_C:pc PUNTO_COMA:pc;
+funcion ::= DESC:d PARENTESIS_A:pa ID:id PARENTESIS_C:pc PUNTO_COMA:pc;
+funcion ::= ID:id PARENTESIS_A:pa CADENA:c PARENTESIS_C:pc PUNTO_COMA:pc;
